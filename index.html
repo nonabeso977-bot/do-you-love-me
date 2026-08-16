@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Do You Love Me?</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    overflow: hidden;
+
+    font-family: Arial, sans-serif;
+
+    background:
+        radial-gradient(circle at 20% 20%, #fff 0 2px, transparent 3px),
+        radial-gradient(circle at 80% 30%, #fff 0 2px, transparent 3px),
+        linear-gradient(135deg, #ffd6e5, #ffc1d8);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* البطاقة */
+
+.card {
+    width: min(90%, 430px);
+    min-height: 540px;
+
+    background: rgba(255,255,255,0.92);
+
+    border-radius: 30px;
+
+    padding: 30px 25px;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,0.15);
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+/* الصورة / الوجه */
+
+.face {
+    width: 150px;
+    height: 150px;
+
+    margin: auto;
+
+    border-radius: 25px;
+
+    background: #ffe8ef;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 80px;
+
+    transition: 0.3s;
+}
+
+/* العنوان */
+
+h1 {
+    color: #ff477e;
+
+    font-size: 30px;
+
+    margin: 20px 0 10px;
+}
+
+/* الكلام */
+
+.message {
+    color: #666;
+
+    min-height: 45px;
+
+    font-size: 16px;
+
+    transition: 0.2s;
+}
+
+/* منطقة الأزرار */
+
+.buttons {
+    position: relative;
+
+    width: 100%;
+    height: 160px;
+
+    margin-top: 25px;
+}
+
+/* الأزرار */
+
+button {
+    border: none;
+
+    border-radius: 15px;
+
+    padding: 14px 25px;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s,
+        left 0.15s,
+        top 0.15s;
+}
+
+/* YES */
+
+#yes {
+    background: #ff477e;
+
+    color: white;
+
+    position: absolute;
+
+    left: 15%;
+
+    top: 50px;
+
+    z-index: 2;
+}
+
+#yes:hover {
+    transform: scale(1.08);
+}
+
+/* NO */
+
+#no {
+    background: #ddd;
+
+    color: #444;
+
+    position: absolute;
+
+    left: 55%;
+
+    top: 50px;
+}
+
+/* عداد */
+
+.counter {
+    color: #999;
+
+    font-size: 13px;
+
+    margin-top: 5px;
+}
+
+/* النهاية */
+
+#ending {
+    display: none;
+}
+
+#ending h1 {
+    font-size: 34px;
+}
+
+.big-heart {
+    font-size: 100px;
+
+    animation: heartbeat 0.8s infinite alternate;
+}
+
+@keyframes heartbeat {
+
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.2);
+    }
+
+}
+
+/* قلوب صغيرة */
+
+.heart {
+    position: fixed;
+
+    font-size: 25px;
+
+    pointer-events: none;
+
+    animation: floatUp 2s linear forwards;
+}
+
+@keyframes floatUp {
+
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(-150px);
+        opacity: 0;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<div class="card">
+
+    <!-- الشاشة الأولى -->
+
+    <div id="main">
+
+        <div class="face" id="face">
+            🥺
+        </div>
+
+        <h1 id="question">
+            Do you love me?
+        </h1>
+
+        <div class="message" id="message">
+            Be honest... I can handle it.
+        </div>
+
+        <div class="buttons">
+
+            <button id="yes">
+                YES ❤️
+            </button>
+
+            <button id="no">
+                NO 💀
+            </button>
+
+        </div>
+
+        <div class="counter">
+            Attempts: <span id="attempts">0</span>
+        </div>
+
+    </div>
+
+
+    <!-- شاشة النهاية -->
+
+    <div id="ending">
+
+        <div class="big-heart">
+            ❤️
+        </div>
+
+        <h1>
+            YOU SAID YES!
+        </h1>
+
+        <p>
+            I KNEW IT.
+        </p>
+
+        <p>
+            There was absolutely no escape.
+        </p>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const no = document.getElementById("no");
+
+const yes = document.getElementById("yes");
+
+const face = document.getElementById("face");
+
+const question = document.getElementById("question");
+
+const message = document.getElementById("message");
+
+const counter = document.getElementById("attempts");
+
+const main = document.getElementById("main");
+
+const ending = document.getElementById("ending");
+
+let attempts = 0;
+
+let yesSize = 1;
+
+
+/* الرسائل */
+
+const reactions = [
+
+    {
+        face: "🥺",
+        question: "Do you love me?",
+        message: "Be honest... I can handle it."
+    },
+
+    {
+        face: "😟",
+        question: "Are you sure?",
+        message: "Maybe you clicked the wrong button."
+    },
+
+    {
+        face: "😭",
+        question: "Really?",
+        message: "That was unnecessarily cruel."
+    },
+
+    {
+        face: "😨",
+        question: "YOU SAID NO?!",
+        message: "Think very carefully."
+    },
+
+    {
+        face: "😡",
+        question: "EXCUSE ME?",
+        message: "Put that NO button down."
+    },
+
+    {
+        face: "🤨",
+        question: "Nice try.",
+        message: "You're not getting away that easily."
+    },
+
+    {
+        face: "💀",
+        question: "STOP.",
+        message: "The button is becoming self-aware."
+    },
+
+    {
+        face: "🤡",
+        question: "You again?",
+        message: "At this point you're just bullying me."
+    },
+
+    {
+        face: "👁️👄👁️",
+        question: "WHY?",
+        message: "What did I ever do to you?"
+    }
+
+];
+
+
+/* تحريك زر NO */
+
+function moveNo() {
+
+    attempts++;
+
+    counter.textContent = attempts;
+
+
+    /* اختيار رد */
+
+    let index = Math.min(
+        attempts,
+        reactions.length - 1
+    );
+
+    let reaction = reactions[index];
+
+
+    face.textContent = reaction.face;
+
+    question.textContent = reaction.question;
+
+    message.textContent = reaction.message;
+
+
+    /* حجم YES */
+
+    yesSize += 0.08;
+
+    yes.style.transform =
+        `scale(${yesSize})`;
+
+
+    /* مساحة الحركة */
+
+    const area =
+        document.querySelector(".buttons");
+
+
+    const maxX =
+        area.clientWidth - no.offsetWidth;
+
+    const maxY =
+        area.clientHeight - no.offsetHeight;
+
+
+    /* مكان عشوائي */
+
+    const x =
+        Math.random() * maxX;
+
+    const y =
+        Math.random() * maxY;
+
+
+    no.style.left = `${x}px`;
+
+    no.style.top = `${y}px`;
+
+
+    /* تغيير النص */
+
+    if (attempts === 3) {
+
+        no.textContent = "NOPE";
+
+    }
+
+    if (attempts === 5) {
+
+        no.textContent = "STOP";
+
+    }
+
+    if (attempts === 7) {
+
+        no.textContent = "WHY";
+
+    }
+
+    if (attempts >= 9) {
+
+        no.textContent = "NICE TRY";
+
+    }
+
+}
+
+
+/* لمس / ضغط NO */
+
+no.addEventListener(
+    "mouseenter",
+    moveNo
+);
+
+no.addEventListener(
+    "touchstart",
+    function(event) {
+
+        event.preventDefault();
+
+        moveNo();
+
+    }
+);
+
+
+/* YES */
+
+yes.addEventListener(
+    "click",
+    accept
+);
+
+
+function accept() {
+
+    main.style.display = "none";
+
+    ending.style.display = "block";
+
+    createHearts();
+
+}
+
+
+/* صناعة القلوب */
+
+function createHearts() {
+
+    for (
+        let i = 0;
+        i < 25;
+        i++
+    ) {
+
+        setTimeout(
+            () => {
+
+                const heart =
+                    document.createElement("div");
+
+                heart.className =
+                    "heart";
+
+                heart.textContent =
+                    "❤️";
+
+                heart.style.left =
+                    Math.random() * 100 + "vw";
+
+                heart.style.top =
+                    "80vh";
+
+                heart.style.animationDuration =
+                    (1.5 + Math.random() * 2) + "s";
+
+
+                document.body.appendChild(
+                    heart
+                );
+
+
+                setTimeout(
+                    () => heart.remove(),
+                    3000
+                );
+
+            },
+            i * 100
+        );
+
+    }
+
+}
+
+</script>
+
+</body>
+          </html>
